@@ -1,0 +1,17 @@
+Package: heatmap3
+Type: Package
+Title: A improved heatmap package
+Version: 0.1.2
+Date: 2013-9-30
+Author: Shilin Zhao, Quanhu Sheng
+Maintainer: Shilin Zhao <zhaoshilin@gmail.com>
+VignetteBuilder: knitr
+Description: heatmap3 is a improved heatmap package. It is completely
+    compatible with the original R function heatmap, and provides some more
+    powerful and convenient features.
+License: GPL (>= 2)
+Suggests:
+    knitr
+LazyLoad: yes
+Collate:
+    'heatmap3.R'

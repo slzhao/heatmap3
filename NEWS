@@ -1,2 +1,5 @@
+2013-10-08
+heatmap3 0.1.5: Updated new features and fixed a bug. New parameters balanceColor, ColSideLabs and RowSideLabs were supported.
+
 2013-09-30
-heatmap3 0.1.0: First version for test
+heatmap3 0.1.0: First version for test.

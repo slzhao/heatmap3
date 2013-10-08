@@ -12,6 +12,7 @@
 ##' @inheritParams stats::heatmap
 ##' @param legendfun function used to generate legend in top left of the figure. If not specified, the color bar will be plotted. You can use any plot functions to generate your own legend. Or a function \code{\link{showLegend}} is also provided as a example.
 ##' @param method the agglomeration method to be used by \code{\link{hclust}} function. This should be (an unambiguous abbreviation of) one of "ward", "single", "complete", "average", "mcquitty", "median" or "centroid".
+##' @param balanceColor logical indicating if the colors need to be balanced so that the median color will represent the 0 value. The default value is F.
 ##' @param ColAxisColors integer indicating which coloum of ColSideColors will be used as colors for labels in coloum axis. The default value is 0, which means all coloum labels will be in black color.
 ##' @param RowAxisColors integer indicating which coloum of RowSideColors will be used as colors for labels in row axis. The default value is 0, which means all row labels will be in black color.
 ##' @param showColDendro logical indicating if the coloum dendrogram should be plotted (when Colv isn't NA).
@@ -38,7 +39,7 @@
 ##' RowSideColors<-colorRampPalette(c("chartreuse4", "white", "firebrick"))(40)
 ##' heatmap3(rnormData,ColSideColors=ColSideColors,RowSideColors=RowSideColors,col=colorRampPalette(c("green", "black", "red"))(1024),ColAxisColors=1,RowAxisColors=1,legendfun=function() showLegend(legend=c("Control","Treatment","TrtA Treatment","TrtB Treatment"),col=c("steelblue2","lightgoldenrod","brown1","mediumpurple2")))
 heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL, 
-		distfun = function(x) as.dist(1 - cor(t(x),use="pa")), showColDendro=T,showRowDendro=T,col=colorRampPalette(c("navy", "white", "firebrick3"))(1024),legendfun,method="complete",ColAxisColors=0,RowAxisColors=0, hclustfun = hclust, reorderfun = function(d, 
+		distfun = function(x) as.dist(1 - cor(t(x),use="pa")),balanceColor=F, ColSideLabs,RowSideLabs,showColDendro=T,showRowDendro=T,col=colorRampPalette(c("navy", "white", "firebrick3"))(1024),legendfun,method="complete",ColAxisColors=0,RowAxisColors=0, hclustfun = hclust, reorderfun = function(d, 
 				w) reorder(d, w), add.expr,symm = FALSE, revC = identical(Colv, 
 				"Rowv"), scale = c("row", "column", "none"), na.rm = TRUE, 
 		margins = c(5, 5), ColSideColors, RowSideColors, cexRow = 0.2 + 
@@ -131,9 +132,11 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		x <- sweep(x, 2L, sx, "/", check.margin = FALSE)
 	}
 	lmat <- rbind(c(NA, 3), 2:1)
-	lwid <- c(if (doRdend) 1 else 0.05, 4)
-	lhei <- c((if (doCdend) 1 else 0.05) + if (!is.null(main)) 0.2 else 0, 
-			4)
+#	lwid <- c(if (doRdend) 1 else 0.05, 4)
+	lwid <- c(1, 4)
+#	lhei <- c((if (doCdend) 1 else 0.05) + if (!is.null(main)) 0.2 else 0, 
+#			4)
+	lhei <- c( 1 + if (!is.null(main)) 0.2 else 0,4)
 	if (!missing(ColSideColors)) {
 		if (!is.character(ColSideColors) || nrow(ColSideColors) != 
 				nc) 
@@ -161,6 +164,18 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 	on.exit(dev.flush())
 	op <- par(no.readonly = TRUE)
 	on.exit(par(op), add = TRUE)
+	
+	#balanceColor
+	if (balanceColor) {
+		if (abs(max(x,na.rm=T))>=abs(min(x,na.rm=T))) {
+			cut.off<-round(quantile(1:length(col),probs=1-(abs(max(x,na.rm=T))+abs(min(x,na.rm=T)))/(2*abs(max(x,na.rm=T)))))
+			col<-col[cut.off:length(col)]
+		} else {
+			cut.off<-round(quantile(1:length(col),probs=(abs(max(x,na.rm=T))+abs(min(x,na.rm=T)))/(2*abs(min(x,na.rm=T)))))
+			col<-col[1:cut.off]
+		}
+	}
+	
 	layout(lmat, widths = lwid, heights = lhei, respect = TRUE)
 	if (!missing(legendfun)) {
 		par(mar = c(0, 0, 0, 0))
@@ -190,8 +205,14 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		}
 		rsc = matrix(as.numeric(rsc), nrow = dim(rsc)[1])
 		image(t(rsc), col = as.vector(rsc.colors), axes = FALSE)
-		if (length(colnames(RowSideColors)) > 1) {
-			axis(1, 0:(dim(rsc)[2] - 1)/(dim(rsc)[2] - 1), colnames(RowSideColors), 
+		
+		if (missing(RowSideLabs)) {
+			RowSideLabs<-colnames(RowSideColors)
+		}
+		if (dim(rsc)[2]==1) {
+			axis(1, 0, RowSideLabs, las = 2, tick = FALSE)
+		} else {
+			axis(1, 0:(dim(rsc)[2] - 1)/(dim(rsc)[2] - 1), RowSideLabs, 
 					las = 2, tick = FALSE)
 		}
 	}
@@ -208,9 +229,13 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		}
 		csc = matrix(as.numeric(csc), nrow = dim(csc)[1])
 		image(csc, col = as.vector(csc.colors), axes = FALSE)
-		if (length(colnames(ColSideColors)) > 1) {
-			axis(4, 0:(dim(csc)[2] - 1)/(dim(csc)[2] - 1), colnames(ColSideColors), 
-					las = 2, tick = FALSE)
+		if (missing(ColSideLabs)) {
+			ColSideLabs<-colnames(ColSideColors)
+		}
+		if (dim(csc)[2]==1) {
+			axis(4, 0, ColSideLabs,las = 2, tick = FALSE)
+		} else {
+			axis(4, 0:(dim(csc)[2] - 1)/(dim(csc)[2] - 1), ColSideLabs,las = 2, tick = FALSE)
 		}
 	}
 	par(mar = c(margins[1L], 0, 0, margins[2L]))

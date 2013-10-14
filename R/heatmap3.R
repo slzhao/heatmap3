@@ -207,7 +207,11 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		image(t(rsc), col = as.vector(rsc.colors), axes = FALSE)
 		
 		if (missing(RowSideLabs)) {
-			RowSideLabs<-colnames(RowSideColors)
+			if (ncol(RowSideColors)==1 & colnames(RowSideColors)[1]=="") {
+				RowSideLabs<-""
+			} else {
+				RowSideLabs<-colnames(RowSideColors)
+			}
 		}
 		if (dim(rsc)[2]==1) {
 			axis(1, 0, RowSideLabs, las = 2, tick = FALSE)
@@ -230,7 +234,11 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		csc = matrix(as.numeric(csc), nrow = dim(csc)[1])
 		image(csc, col = as.vector(csc.colors), axes = FALSE)
 		if (missing(ColSideLabs)) {
-			ColSideLabs<-colnames(ColSideColors)
+			if (ncol(ColSideColors)==1 & colnames(ColSideColors)[1]=="") {
+				ColSideLabs<-""
+			} else {
+				ColSideLabs<-colnames(ColSideColors)
+			}
 		}
 		if (dim(csc)[2]==1) {
 			axis(4, 0, ColSideLabs,las = 2, tick = FALSE)

@@ -132,10 +132,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		x <- sweep(x, 2L, sx, "/", check.margin = FALSE)
 	}
 	lmat <- rbind(c(NA, 3), 2:1)
-#	lwid <- c(if (doRdend) 1 else 0.05, 4)
 	lwid <- c(1, 4)
-#	lhei <- c((if (doCdend) 1 else 0.05) + if (!is.null(main)) 0.2 else 0, 
-#			4)
 	lhei <- c( 1 + if (!is.null(main)) 0.2 else 0,4)
 	if (!missing(ColSideColors)) {
 		if (!is.character(ColSideColors) || nrow(ColSideColors) != 

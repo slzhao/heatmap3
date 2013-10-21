@@ -47,7 +47,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		labCol = NULL, main = NULL, xlab = NULL, ylab = NULL, keep.dendro = FALSE, 
 		verbose = getOption("verbose"),...) 
 {
-	scale <- if (missing(scale)) 
+	scale <- if (symm && missing(scale)) 
 				"none"
 			else match.arg(scale)
 	if (is.data.frame(x)) {x<-as.matrix(x)}

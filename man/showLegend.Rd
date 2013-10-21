@@ -1,0 +1,38 @@
+\name{showLegend}
+\alias{showLegend}
+\title{showLegend}
+\usage{
+  showLegend(legend = c("Group A", "Group B"), lwd = 3,
+    cex = 1.1, col = c("red", "blue"), ...)
+}
+\arguments{
+  \item{lwd}{the line widths for lines appearing in the
+  legend.}
+
+  \item{...}{additional arguments passed on to
+  \code{\link{legend}}}
+
+  \item{legend}{a character or \link{expression} vector of
+  length \eqn{\ge 1} to appear in the legend.  Other
+  objects will be coerced by
+  \code{\link{as.graphicsAnnot}}.}
+
+  \item{cex}{character expansion factor \bold{relative} to
+  current \code{par("cex")}.  Used for text, and provides
+  the default for \code{pt.cex} and \code{title.cex}.}
+
+  \item{col}{the color of points or lines appearing in the
+  legend.}
+}
+\description{
+  The function showLegend is an example for generating
+  legend in the figure of heatmap3 function. You can use
+  your any plot functions to generate your own legend.
+}
+\examples{
+RowSideColors<-rep("steelblue2",nrow(mtcars))
+RowSideColors[c(4:6,15:17,22:26,29)]<-"lightgoldenrod"
+RowSideColors[c(1:3,19:21)]<-"brown1"
+heatmap3(mtcars,scale="col",margins=c(2,10),RowSideColors=RowSideColors,legendfun=function() showLegend(legend=c("European","American","Japanese"),col=c("steelblue2","lightgoldenrod","brown1"),cex=1.5))
+}
+

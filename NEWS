@@ -1,3 +1,18 @@
+2014-06-07
+heatmap3 1.0.3: Examples were improved and tested. Documents were improved.
+
+2014-05-23
+heatmap3 1.0.2: Documents were improved and fixed a bug.
+
+2014-05-20
+heatmap3 1.0.1: New features and parameters: ColSideAnn, ColSideFun, ColSideCut, ColSideWidth.
+
+2014-03-06
+heatmap3 1.0.0: Documents were improved.
+
+2013-10-30
+heatmap3 0.1.6: Some parameters were modified. Released for test.
+
 2013-10-08
 heatmap3 0.1.5: Updated new features and fixed a bug. New parameters balanceColor, ColSideLabs and RowSideLabs were supported.
 

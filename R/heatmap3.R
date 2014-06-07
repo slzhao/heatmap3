@@ -1,8 +1,3 @@
-###############################################################################
-# Data: 2012-09-19
-# Author: Shilin Zhao (zhaoshilin@gmail.com)
-###############################################################################
-
 ##' heatmap3
 ##' 
 ##' The function heatmap3 is completely compatible with the original R function heatmap, and provides more new features.
@@ -10,18 +5,29 @@
 ##' 
 ##' 
 ##' @inheritParams stats::heatmap
-##' @param legendfun function used to generate legend in top left of the figure. If not specified, the color bar will be plotted. You can use any plot functions to generate your own legend. Or a function \code{\link{showLegend}} is also provided as a example.
+##' @param useRaster logical; if TRUE a bitmap raster is used to plot the image instead of polygons. The grid must be regular in that case, otherwise an error is raised.
+##' @param file pdf file name, only works when topN was used.
+##' @param topN vector a list of numbers. topN genes will be used to generate the heatmaps.
+##' @param filterFun function used to filter genes, such as sd, mean, sum. It will be used in a apply function to caculate for each row.
+##' @param legendfun function used to generate legend in top left of the figure. If not specified, the color bar will be plotted. The users can use any plot functions to generate their own legend. Or a function \code{\link{showLegend}} is also provided as a example.
+##' @param ColSideFun function used to generate annotation and labeling figure in column side. The users can use any plot functions to generate their own figure. And a function \code{\link{showAnn}} is also provided as a example.
+##' @param ColSideAnn data frame with continuous and factor variables as annotation information. This parameter will be sorted by coloum dendrogram and then passed to ColSideFun.
+##' @param ColSideWidth numeric the height of column side area, which can be used by ColSideFun function.
+##' @param ColSideCut numeric the value to be used in cutting coloum dendrogram. The dendrogram and annotation will be divided into different parts and labeled respectively.
 ##' @param method the agglomeration method to be used by \code{\link{hclust}} function. This should be (an unambiguous abbreviation of) one of "ward", "single", "complete", "average", "mcquitty", "median" or "centroid".
 ##' @param balanceColor logical indicating if the colors need to be balanced so that the median color will represent the 0 value. The default value is F.
 ##' @param ColAxisColors integer indicating which coloum of ColSideColors will be used as colors for labels in coloum axis. The default value is 0, which means all coloum labels will be in black color.
 ##' @param RowAxisColors integer indicating which coloum of RowSideColors will be used as colors for labels in row axis. The default value is 0, which means all row labels will be in black color.
 ##' @param showColDendro logical indicating if the coloum dendrogram should be plotted (when Colv isn't NA).
 ##' @param showRowDendro logical indicating if the row dendrogram should be plotted (when Rowv isn't NA).
+##' @param RowSideLabs label for RowSideColors
+##' @param ColSideLabs label for ColSideColors
 ##' @param col specifying the colors, used in \code{\link{image}} function.
 ##' @param cexRow,cexCol positive numbers, used as cex.axis in for the row or column axis labeling. The defaults currently only use number of rows or columns, respectively.
 ##' @param labRow,labCol character vectors with row and column labels to use; these default to rownames(x) or colnames(x), respectively.
 ##' @param main,xlab,ylab main, x- and y-axis titles; defaults to none.
 ##' @param ... additional arguments passed on to \code{\link{image}}.
+##' @importFrom fastcluster hclust
 ##' @export
 ##' @return The same return value as \code{\link{hclust}} function.
 ##' @examples #gererate data
@@ -35,18 +41,50 @@
 ##' #A simple example
 ##' heatmap3(rnormData,ColSideColors=ColSideColors,showRowDendro=FALSE)
 ##' #A more detail example
-##' ColSideColors<-cbind(Method1=c(rep("steelblue2",5), rep(c("lightgoldenrod"),20)),Method2=c(rep("steelblue2",5), rep(c("brown1", "mediumpurple2"),10)))
+##' ColSideAnn<-data.frame(Information=rnorm(25),Group=c(rep("Control",5), rep(c("TrtA", "TrtB"),10)))
+##' row.names(ColSideAnn)<-colnames(rnormData)
 ##' RowSideColors<-colorRampPalette(c("chartreuse4", "white", "firebrick"))(40)
-##' heatmap3(rnormData,ColSideColors=ColSideColors,RowSideColors=RowSideColors,col=colorRampPalette(c("green", "black", "red"))(1024),ColAxisColors=1,RowAxisColors=1,legendfun=function() showLegend(legend=c("Control","Treatment","TrtA Treatment","TrtB Treatment"),col=c("steelblue2","lightgoldenrod","brown1","mediumpurple2")))
+##' result<-heatmap3(rnormData,ColSideCut=1.2,ColSideAnn=ColSideAnn,ColSideFun=function(x) showAnn(x),ColSideWidth=0.8,RowSideColors=RowSideColors,col=colorRampPalette(c("green", "black", "red"))(1024),RowAxisColors=1,legendfun=function() showLegend(legend=c("Low","High"),col=c("chartreuse4","firebrick")),verbose=TRUE)
+##' #annotations distribution in different clusters and the result of statistic tests
+##' result$cutTable
 heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL, 
 		distfun = function(x) as.dist(1 - cor(t(x),use="pa")),balanceColor=F, ColSideLabs,RowSideLabs,showColDendro=T,showRowDendro=T,col=colorRampPalette(c("navy", "white", "firebrick3"))(1024),legendfun,method="complete",ColAxisColors=0,RowAxisColors=0, hclustfun = hclust, reorderfun = function(d, 
 				w) reorder(d, w), add.expr,symm = FALSE, revC = identical(Colv, 
 				"Rowv"), scale = c("row", "column", "none"), na.rm = TRUE, 
+		ColSideFun,ColSideAnn,ColSideWidth=0.4,ColSideCut,
+		file="heatmap3.pdf",topN=NA,filterFun=sd,
 		margins = c(5, 5), ColSideColors, RowSideColors, cexRow = 0.2 + 
-				1/log10(nr), cexCol = 0.2 + 1/log10(nc), labRow = NULL, 
+				1/log10(nrow(x)), cexCol = 0.2 + 1/log10(ncol(x)), labRow = NULL, 
 		labCol = NULL, main = NULL, xlab = NULL, ylab = NULL, keep.dendro = FALSE, 
-		verbose = getOption("verbose"),...) 
+		verbose = getOption("verbose"),useRaster=if (ncol(x)*nrow(x)>=50000) TRUE else FALSE ,...) 
 {
+	#loop fot different topN
+	if (!all(is.na(topN))) {
+		temp<-apply(x,1,filterFun)
+		pdf(file)
+		for (n in topN) {
+			xSub<-x[rev(order(temp))[1:n],,drop=F]
+			if (!missing(RowSideColors)) {
+				RowSideColorsBak<-RowSideColors
+				RowSideColors<-RowSideColors[rev(order(temp))[1:n],,drop=F]
+			}
+			result[[paste0(n)]]<-heatmap3(xSub,Rowv=Rowv,Colv=Colv,distfun=distfun,balanceColor=balanceColor,ColSideLabs=ColSideLabs,RowSideLabs=RowSideLabs,showColDendro=showColDendro,showRowDendro=showRowDendro,col=col,legendfun=legendfun,method="complete",ColAxisColors=0,RowAxisColors=0, hclustfun = hclust, reorderfun=reorderfun,
+					add.expr=add.expr,symm = symm, revC=revC,scale=scale,na.rm=na.rm,
+					ColSideFun=ColSideFun,ColSideAnn=ColSideAnn,ColSideWidth=ColSideWidth,ColSideCut=ColSideCut,
+					margins = margins,ColSideColors=ColSideColors,RowSideColors=RowSideColors,cexRow = cexRow,
+					cexCol = cexCol, labRow = labRow, 
+					labCol = labCol, main = paste0("top ",n), xlab = xlab, ylab = ylab, keep.dendro = keep.dendro, 
+					verbose = verbose,...		
+			)
+			if (!missing(RowSideColors)) {
+				RowSideColors<-RowSideColorsBak
+			}
+		}
+		temp<-dev.off()
+		cat(paste0("The heatmaps were generated at ",file,"\n"))
+		return(invisible(result))
+	}
+	
 	scale <- if (symm && missing(scale)) 
 				"none"
 			else match.arg(scale)
@@ -134,12 +172,15 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 	lmat <- rbind(c(NA, 3), 2:1)
 	lwid <- c(1, 4)
 	lhei <- c( 1 + if (!is.null(main)) 0.2 else 0,4)
-	if (!missing(ColSideColors)) {
+	if (!missing(ColSideFun)) {
+		lmat <- rbind(lmat[1, ] + 1, c(NA, 1), lmat[2, ] + 1)
+		lhei <- c(lhei[1L], ColSideWidth, lhei[2L])
+	} else if (!missing(ColSideColors)){ #ColSideColors
 		if (!is.character(ColSideColors) || nrow(ColSideColors) != 
 				nc) 
 			stop("'ColSideColors' must be a character vector or matrix of length ncol(x)")
 		lmat <- rbind(lmat[1, ] + 1, c(NA, 1), lmat[2, ] + 1)
-		lhei <- c(lhei[1L], 0.2, lhei[2L])
+		lhei <- c(lhei[1L], 0.2*round(ncol(ColSideColors)/2+0.1), lhei[2L])
 	}
 	if (!missing(RowSideColors)) {
 		if (!is.character(RowSideColors) || nrow(RowSideColors) != 
@@ -147,16 +188,16 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 			stop("'RowSideColors' must be a character vector or matrix of length nrow(x)")
 		lmat <- cbind(lmat[, 1] + 1, c(rep(NA, nrow(lmat) - 1), 
 						1), lmat[, 2] + 1)
-		lwid <- c(lwid[1L], 0.2, lwid[2L])
+		lwid <- c(lwid[1L], 0.2*round(ncol(RowSideColors)/2+0.1), lwid[2L])
 	}
 	lmat<-lmat+1
 	lmat[is.na(lmat)] <- 0
 	lmat[1,1]<-1
-	if (verbose) {
-		cat("layout: widths = ", lwid, ", heights = ", lhei, 
-				"; lmat=\n")
-		print(lmat)
-	}
+#	if (verbose) {
+#		cat("layout: widths = ", lwid, ", heights = ", lhei, 
+#				"; lmat=\n")
+#		print(lmat)
+#	}
 	dev.hold()
 	on.exit(dev.flush())
 	op <- par(no.readonly = TRUE)
@@ -217,7 +258,55 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 					las = 2, tick = FALSE)
 		}
 	}
-	if (!missing(ColSideColors)) {
+	if (!missing(ColSideCut)) {
+		ColSideCutResult<-cut(ddc,ColSideCut)$lower
+		cutTable<-NULL
+		if (verbose) {
+			cat(paste0("The samples could be cut into ",length(ColSideCutResult)," parts with height ",ColSideCut))
+			cat("\n")
+			ColSideCutResultSubIndList<-NULL
+			for (i in 1:length(ColSideCutResult)) {
+				ColSideCutResultSubInd<-order.dendrogram(ColSideCutResult[[i]])
+				ColSideCutResultSubIndList[[i]]<-ColSideCutResultSubInd
+#				cat(paste0("Summary for cluster ",i,":\n"))
+#				print(summary(ColSideAnn[ColSideCutResultSubInd,]))
+			}
+			for (i in 1:ncol(ColSideAnn)) {
+				if (is.factor(ColSideAnn[,i])) { #factor
+					cutTable[[i]]<-sapply(ColSideCutResultSubIndList,function(x) table(ColSideAnn[x,i]))
+					colnames(cutTable[[i]])<-paste0("Cluster ",1:length(ColSideCutResult))
+					names(cutTable)[i]<-colnames(ColSideAnn)[i]
+					pvalue<-chisq.test(cutTable[[i]])$p.value
+					cat(paste0("Differential distribution for ",colnames(ColSideAnn)[i],", p value by chi-squared test: ",round(pvalue,3),"\n"))
+					cutTable[[i]]<-rbind(cutTable[[i]],round(cutTable[[i]][1,]/rowSums(cutTable[[i]]),2))
+					row.names(cutTable[[i]])[nrow(cutTable[[i]])]<-paste0(row.names(cutTable[[i]])[1],"_Percent")
+					cutTable[[i]]<-cbind(cutTable[[i]],pValue=c(pvalue,rep(NA,nrow(cutTable[[i]])-1)))
+				} else { #continous
+					cutTable[[i]]<-sapply(split(ColSideAnn[unlist(ColSideCutResultSubIndList),i],rep(1:length(ColSideCutResultSubIndList),sapply(ColSideCutResultSubIndList,length))),function(x) summary(na.omit(x)))
+					colnames(cutTable[[i]])<-paste0("Cluster ",1:length(ColSideCutResult))
+					names(cutTable)[i]<-colnames(ColSideAnn)[i]
+					temp<-aov(ColSideAnn[unlist(ColSideCutResultSubIndList),i]~as.factor(rep(1:length(ColSideCutResultSubIndList),sapply(ColSideCutResultSubIndList,length))))
+					pvalue<-summary(temp)[[1]]$"Pr(>F)"[1]
+					cat(paste0("Differential distribution for ",colnames(ColSideAnn)[i],", p value by ANOVA: ",round(pvalue,3),"\n"))
+					cutTable[[i]]<-cbind(cutTable[[i]],pValue=c(pvalue,rep(NA,5)))
+				}
+			}
+			
+		}
+		ColSideCutResultCol<-rainbow(length(ColSideCutResult),alpha=0.2)
+		ColNumber<-(ncol(x)-1)
+	}
+	if (!missing(ColSideFun)) {
+		par(mar = c(0.5, 0, 0, margins[2L]))
+		ColSideAnn<-ColSideAnn[colInd,,drop=F]
+		ColAnnHeight<-ColSideFun(ColSideAnn)
+		if (!exists("ColAnnHeight")) {
+			ColAnnHeight<-par("usr")[3:4]
+		}
+		if (!missing(ColSideCut)) {
+			rect(c(0-1/ColNumber/2,(0-1/ColNumber/2)+1/ColNumber*cumsum(sapply(ColSideCutResult,function(x) length(unlist(x))))[-length(ColSideCutResult)]),ColAnnHeight[1],c((0-1/ColNumber/2)+1/ColNumber*cumsum(sapply(ColSideCutResult,function(x) length(unlist(x))))), ColAnnHeight[2],col=ColSideCutResultCol)
+		}
+	} else if (!missing(ColSideColors)) {
 		par(mar = c(0.5, 0, 0, margins[2L]))
 		csc = ColSideColors[colInd,,drop=F]
 		csc.colors = matrix()
@@ -254,7 +343,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 	}
 	else iy <- 1L:nr
 	image(1L:nc, 1L:nr, x, xlim = 0.5 + c(0, nc), ylim = 0.5 + 
-					c(0, nr), axes = FALSE, xlab = "", ylab = "", col=col,...)
+					c(0, nr), axes = FALSE, xlab = "", ylab = "", col=col,useRaster=useRaster,...)
 	if (!missing(ColSideColors) & ColAxisColors!=0) {
 		mtext(1, at=1L:nc, text = labCol, las = 2, line = 0.5,cex = cexCol,col=ColSideColors[colInd,ColAxisColors])
 	} else {
@@ -279,6 +368,9 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 	par(mar = c(0, 0, if (!is.null(main)) 1 else 0, margins[2L]))
 	if (doCdend & showColDendro) {
 		plot(ddc, axes = FALSE, xaxs = "i", leaflab = "none")
+		if (!missing(ColSideCut)) {
+			rect(c(0.5,0.5+cumsum(sapply(ColSideCutResult,function(x) length(unlist(x))))[-length(ColSideCutResult)]), 0, cumsum(sapply(ColSideCutResult,function(x) length(unlist(x))))+0.5, ColSideCut,col=ColSideCutResultCol)
+		}
 	}	else if (!is.null(main)) 
 		frame()
 	if (!is.null(main)) {
@@ -286,7 +378,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		title(main, cex.main = 1.5 * op[["cex.main"]])
 	}
 	invisible(list(rowInd = rowInd, colInd = colInd, Rowv = if (keep.dendro && 
-							doRdend) ddr, Colv = if (keep.dendro && doCdend) ddc))
+							doRdend) ddr, Colv = if (keep.dendro && doCdend) ddc, cutTable = if (!missing(ColSideAnn) && !missing(ColSideCut)) cutTable))
 }
 
 ##' showLegend
@@ -306,4 +398,61 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 showLegend<-function(legend=c("Group A","Group B"),lwd=3,cex=1.1,col=c("red","blue"),...) {
 	plot(0,xaxt="n",bty="n",yaxt="n",type="n",xlab="",ylab="")
 	legend("topleft",legend=legend,lwd=lwd,col=col,bty="n",cex=cex,...)
+}
+
+##' showAnn
+##' 
+##' The function showAnn is an example for generating annotation figure in the result of heatmap3 function. You can use your any plot functions to generate your own annotation figure.
+##' 
+##' 
+##' 
+##' @param annData a data frame contains the annotation information for samples. It can only contain factor or numeric variables, and each row reprezent a sample with the same order of the columns in expression matrix.
+##' @export
+##' @examples annData<-data.frame(mtcars[,c("mpg","am","wt","gear")])
+##' annData[,2]<-as.factor(annData[,2])
+##' annData[,4]<-as.factor(annData[,4])
+##' #Display annotation
+##' \dontrun{
+##' showAnn(annData)
+##' }
+##' #Heatmap with annotation
+##' heatmap3(t(mtcars),ColSideAnn=annData,ColSideFun=function(x) showAnn(x),ColSideWidth=1.2,balanceColor=TRUE)
+showAnn<-function(annData) {	
+	#see how many lines were needed for factor annotation
+	temp<-which(sapply(annData,class)=="factor")
+	levelsAll<-sapply(annData[,temp,drop=F],levels)
+	n<-length(unlist(levelsAll))
+	totalLine<-(ncol(annData)-length(temp))*2+n
+	plot(c(0-1/nrow(annData)/2,1+1/nrow(annData)/2),c(1,totalLine+1),type="n",xaxt="n",yaxt="n",xlab="",ylab="",bty="n",axes = FALSE,xaxs="i")
+	
+	offset<-1
+	for (x in 1:ncol(annData)) {
+		if (is.factor(annData[,x])) {
+			temp<-factor2Matrix(annData[,x],colnames(annData)[x])
+			image(seq(0,1,length.out=nrow(annData)),(1:ncol(temp))+offset-0.5,temp,col=c("white","black"),add=T)
+			segments(seq(0-1/nrow(annData)/2,1+1/nrow(annData)/2,length.out=nrow(annData)+1),offset,seq(0-1/nrow(annData)/2,1+1/nrow(annData)/2,length.out=nrow(annData)+1),ncol(temp)+offset,col="white")
+			abline(h=c(0,ncol(temp))+offset,col="white")
+			mtext(2,at=(1:ncol(temp))+offset-0.5,text=colnames(temp),las=1)
+			offset<-offset+ncol(temp)
+		} else {
+			points(seq(0,1,length.out=nrow(annData)),data2range(annData[,x],offset=offset))
+			lines(seq(0,1,length.out=nrow(annData)),lowess(data2range(annData[,x]))$y+offset)
+			mtext(2,at=offset+0.5,text=colnames(annData)[x],las=1)
+			axis(4,at=range(data2range(annData[,x],offset=offset),na.rm=T),labels=round(range(annData[,x],na.rm=T),1),las=1)
+			offset<-offset+2
+		}
+	}
+	return(c(0.6,offset))
+}
+
+data2range<-function(x,minNew=0.1,maxNew=1.9,offset=0) {
+	(x-min(x,na.rm=T))/(max(x,na.rm=T)-min(x,na.rm=T))*(maxNew-minNew)+minNew+offset
+}
+
+factor2Matrix<-function(factorData,colName) {
+	factorMatrix<-matrix(0,nrow=length(factorData),ncol=length(levels(factorData)))
+	temp<-cbind(1:nrow(factorMatrix),as.numeric(factorData))
+	factorMatrix[temp]<-1
+	colnames(factorMatrix)<-paste(colName,levels(factorData),sep="=")
+	return(factorMatrix)
 }

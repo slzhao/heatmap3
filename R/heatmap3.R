@@ -35,7 +35,8 @@
 ##' rnormData<-matrix(rnorm(1000), 40, 25)
 ##' rnormData[1:15, seq(6, 25, 2)] = rnormData[1:15, seq(6, 25, 2)] + 2
 ##' rnormData[16:40, seq(7, 25, 2)] = rnormData[16:40, seq(7, 25, 2)] + 4
-##' colnames(rnormData)<-c(paste("Control", 1:5, sep = ""), paste(c("TrtA", "TrtB"), rep(1:10,each=2), sep = ""))
+##' colnames(rnormData)<-c(paste("Control", 1:5, sep = ""), paste(c("TrtA", "TrtB"),
+##' rep(1:10,each=2), sep = ""))
 ##' rownames(rnormData)<-paste("Probe", 1:40, sep = "")
 ##' ColSideColors<-c(rep("steelblue2",5), rep(c("brown1", "mediumpurple2"),10))
 ##' #A simple example
@@ -44,7 +45,10 @@
 ##' ColSideAnn<-data.frame(Information=rnorm(25),Group=c(rep("Control",5), rep(c("TrtA", "TrtB"),10)))
 ##' row.names(ColSideAnn)<-colnames(rnormData)
 ##' RowSideColors<-colorRampPalette(c("chartreuse4", "white", "firebrick"))(40)
-##' result<-heatmap3(rnormData,ColSideCut=1.2,ColSideAnn=ColSideAnn,ColSideFun=function(x) showAnn(x),ColSideWidth=0.8,RowSideColors=RowSideColors,col=colorRampPalette(c("green", "black", "red"))(1024),RowAxisColors=1,legendfun=function() showLegend(legend=c("Low","High"),col=c("chartreuse4","firebrick")),verbose=TRUE)
+##' result<-heatmap3(rnormData,ColSideCut=1.2,ColSideAnn=ColSideAnn,ColSideFun=function(x) 
+##' showAnn(x),ColSideWidth=0.8,RowSideColors=RowSideColors,col=colorRampPalette(c("green",
+##' "black", "red"))(1024),RowAxisColors=1,legendfun=function() showLegend(legend=c("Low",
+##' "High"),col=c("chartreuse4","firebrick")),verbose=TRUE)
 ##' #annotations distribution in different clusters and the result of statistic tests
 ##' result$cutTable
 heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL, 
@@ -394,7 +398,9 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 ##' @examples RowSideColors<-rep("steelblue2",nrow(mtcars))
 ##' RowSideColors[c(4:6,15:17,22:26,29)]<-"lightgoldenrod"
 ##' RowSideColors[c(1:3,19:21)]<-"brown1"
-##' heatmap3(mtcars,scale="col",margins=c(2,10),RowSideColors=RowSideColors,legendfun=function() showLegend(legend=c("European","American","Japanese"),col=c("steelblue2","lightgoldenrod","brown1"),cex=1.5))
+##' heatmap3(mtcars,scale="col",margins=c(2,10),RowSideColors=RowSideColors,legendfun=function() 
+##' showLegend(legend=c("European","American","Japanese"),col=c("steelblue2","lightgoldenrod",
+##' "brown1"),cex=1.5))
 showLegend<-function(legend=c("Group A","Group B"),lwd=3,cex=1.1,col=c("red","blue"),...) {
 	plot(0,xaxt="n",bty="n",yaxt="n",type="n",xlab="",ylab="")
 	legend("topleft",legend=legend,lwd=lwd,col=col,bty="n",cex=cex,...)
@@ -416,7 +422,8 @@ showLegend<-function(legend=c("Group A","Group B"),lwd=3,cex=1.1,col=c("red","bl
 ##' showAnn(annData)
 ##' }
 ##' #Heatmap with annotation
-##' heatmap3(t(mtcars),ColSideAnn=annData,ColSideFun=function(x) showAnn(x),ColSideWidth=1.2,balanceColor=TRUE)
+##' heatmap3(t(mtcars),ColSideAnn=annData,ColSideFun=function(x) 
+##' showAnn(x),ColSideWidth=1.2,balanceColor=TRUE)
 showAnn<-function(annData) {	
 	#see how many lines were needed for factor annotation
 	temp<-which(sapply(annData,class)=="factor")

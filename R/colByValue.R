@@ -15,7 +15,8 @@
 ##' @return A matrix with colors.
 ##' @examples temp<-rnorm(1000)
 ##' col<-colByValue(temp,col=colorRampPalette(c('chartreuse4','white','firebrick'))(1024),range=c(-2,2))
-##' col<-colByValue(temp,col=colorRampPalette(c('chartreuse4','white','firebrick'))(5),breaks=c(-5,-1,-0.1,0.1,1,5),cex.axis=0.8)
+##' col<-colByValue(temp,col=colorRampPalette(c('chartreuse4',
+##' 'white','firebrick'))(5),breaks=c(-5,-1,-0.1,0.1,1,5),cex.axis=0.8)
 colByValue<-function(x,col,range=NA,breaks=NA,cex.axis=2,las=1,...) {
 	if (is.vector(x)) {
 		x<-as.matrix(x)

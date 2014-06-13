@@ -11,16 +11,15 @@ Heat map and clustering are used frequently in expression analysis studies for d
 
 <a name="download"/>
 # Download and install #
-You can install heatmap3 package in R from [github](https://github.com/slzhao/heatmap3/) by following codes:
+You can install heatmap3 package in R from [CRAN](http://cran.r-project.org/web/packages/heatmap3/index.html) by following codes:
 
-	library(devtools)
-	install_github("heatmap3", user="slzhao")
+	install.packages("heatmap3")
 
 <a name="example"/>
 # Example #
 After you have installed heatmap3 package. You can enter R and use following R codes to see the examples for it.
 	
-	#Load MultiRankSeq package
+	#Load heatmap3 package
 	library(heatmap3)
 	#View help files
 	?heatmap3

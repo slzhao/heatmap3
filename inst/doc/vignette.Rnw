@@ -29,8 +29,8 @@ options(width=58)
 Simulate a gene expression data set with 40 probes and 25 samples. These samples are divided into 3 groups, 5 in control group, 10 in treatment A and 10 in treatment B group. We will use the groups as categorical phenotype and we assume there is one continuous phenotype. Then we will annotate the two phenotypes in heatmap result.
 
 Here we provided two samples:
-The first example is simple. It generated the color bar as lengend, ploted side color bars, didn't plot row dendrogram.
-The second example ploted legend for row side color bars, ploted row side color bars with two columns, texted labels with specified colors, ploted column side phenotype annotation. And we provided a cutoff height then the samples will be cut into different clusters by the cutoff.  And statistic tests for annotations in different groups will be performed and the result will be returned.
+The first example is simple. It generated the color bar as lengend, ploted row side color bars with two columns, didn't plot row dendrogram, and some cells at the bottom left were labeled by specified colors.
+The second example ploted color bars and its legend to display a continuous variable in row side, texted labels with specified colors, ploted column side phenotype annotation. Then we provided a cutoff height so that the samples will be cut into different clusters by the cutoff. And statistic tests for annotations in different groups will be performed and the result will be returned.
 <<heatmap3Example, tidy=T,warning=FALSE>>=
 library(heatmap3)
 example(heatmap3)

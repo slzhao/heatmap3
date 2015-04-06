@@ -1,8 +1,8 @@
 Package: heatmap3
 Type: Package
 Title: A improved heatmap package
-Version: 1.0.4
-Date: 2014-06-10
+Version: 1.1.1
+Date: 2015-04-06
 Author: Shilin Zhao, Yan Guo, Quanhu Sheng, Yu Shyr
 Maintainer: Shilin Zhao <shilin.zhao@vanderbilt.edu>
 VignetteBuilder: knitr
@@ -11,7 +11,7 @@ Description: heatmap3 is an improved heatmap package. It is completely
     powerful and convenient features.
 License: GPL (>= 2)
 Imports:
-	fastcluster
+    fastcluster
 Suggests:
-	knitr
+    knitr
 LazyLoad: yes

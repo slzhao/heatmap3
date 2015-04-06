@@ -14,6 +14,8 @@
 ##' @param ColSideAnn data frame with continuous and factor variables as annotation information. This parameter will be sorted by coloum dendrogram and then passed to ColSideFun.
 ##' @param ColSideWidth numeric the height of column side area, which can be used by ColSideFun function.
 ##' @param ColSideCut numeric the value to be used in cutting coloum dendrogram. The dendrogram and annotation will be divided into different parts and labeled respectively.
+##' @param colorCell A data.frame with 3 columns, indicating which cells will be colored by specific colors. The first column is row index, second column is column index, and the third column is color.
+##' @param highlightCell A data.frame with 3 or 4 columns, indicating which cells will be highlighted by rectangles with specific colors. The first column is row index, second column is column index, the third column is color for rectangle border, and the optional forth column is width for rectangle border. 
 ##' @param method the agglomeration method to be used by \code{\link{hclust}} function. This should be (an unambiguous abbreviation of) one of "ward", "single", "complete", "average", "mcquitty", "median" or "centroid".
 ##' @param balanceColor logical indicating if the colors need to be balanced so that the median color will represent the 0 value. The default value is F.
 ##' @param ColAxisColors integer indicating which coloum of ColSideColors will be used as colors for labels in coloum axis. The default value is 0, which means all coloum labels will be in black color.
@@ -25,6 +27,7 @@
 ##' @param col specifying the colors, used in \code{\link{image}} function.
 ##' @param cexRow,cexCol positive numbers, used as cex.axis in for the row or column axis labeling. The defaults currently only use number of rows or columns, respectively.
 ##' @param labRow,labCol character vectors with row and column labels to use; these default to rownames(x) or colnames(x), respectively.
+##' @param lasRow,lasCol the style of row or column axis labels.
 ##' @param main,xlab,ylab main, x- and y-axis titles; defaults to none.
 ##' @param ... additional arguments passed on to \code{\link{image}}.
 ##' @importFrom fastcluster hclust
@@ -38,9 +41,15 @@
 ##' colnames(rnormData)<-c(paste("Control", 1:5, sep = ""), paste(c("TrtA", "TrtB"),
 ##' rep(1:10,each=2), sep = ""))
 ##' rownames(rnormData)<-paste("Probe", 1:40, sep = "")
-##' ColSideColors<-c(rep("steelblue2",5), rep(c("brown1", "mediumpurple2"),10))
+##' ColSideColors<-cbind(Group1=c(rep("steelblue2",5), rep(c("brown1", "mediumpurple2"),10)),
+##'     Group2=sample(c("steelblue2","brown1", "mediumpurple2"),25,replace=TRUE))
+##' colorCell<-data.frame(row=c(1,3,5),col=c(2,4,6),color=c("green4","black","orange2"),
+##'     stringsAsFactors=FALSE)
+##' highlightCell<-data.frame(row=c(2,4,6),col=c(1,3,5),color=c("black","green4","orange2"),
+##'     lwd=1:3,stringsAsFactors=FALSE)
 ##' #A simple example
-##' heatmap3(rnormData,ColSideColors=ColSideColors,showRowDendro=FALSE)
+##' heatmap3(rnormData,ColSideColors=ColSideColors,showRowDendro=FALSE,colorCell=colorCell,
+##'     highlightCell=highlightCell)
 ##' #A more detail example
 ##' ColSideAnn<-data.frame(Information=rnorm(25),Group=c(rep("Control",5), rep(c("TrtA", "TrtB"),10)))
 ##' row.names(ColSideAnn)<-colnames(rnormData)
@@ -55,10 +64,10 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		distfun = function(x) as.dist(1 - cor(t(x),use="pa")),balanceColor=F, ColSideLabs,RowSideLabs,showColDendro=T,showRowDendro=T,col=colorRampPalette(c("navy", "white", "firebrick3"))(1024),legendfun,method="complete",ColAxisColors=0,RowAxisColors=0, hclustfun = hclust, reorderfun = function(d, 
 				w) reorder(d, w), add.expr,symm = FALSE, revC = identical(Colv, 
 				"Rowv"), scale = c("row", "column", "none"), na.rm = TRUE, 
-		ColSideFun,ColSideAnn,ColSideWidth=0.4,ColSideCut,
+		ColSideFun,ColSideAnn,ColSideWidth=0.4,ColSideCut,colorCell,highlightCell,
 		file="heatmap3.pdf",topN=NA,filterFun=sd,
 		margins = c(5, 5), ColSideColors, RowSideColors, cexRow = 0.2 + 
-				1/log10(nrow(x)), cexCol = 0.2 + 1/log10(ncol(x)), labRow = NULL, 
+				1/log10(nrow(x)), cexCol = 0.2 + 1/log10(ncol(x)),lasRow=2,lasCol=2, labRow = NULL, 
 		labCol = NULL, main = NULL, xlab = NULL, ylab = NULL, keep.dendro = FALSE, 
 		verbose = getOption("verbose"),useRaster=if (ncol(x)*nrow(x)>=50000) TRUE else FALSE ,...) 
 {
@@ -143,7 +152,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		else {
 			hcc <- hclustfun(distfun(if (symm) 
 										x
-									else t(x)))
+									else t(x)),method=method)
 			ddc <- as.dendrogram(hcc)
 			if (!is.logical(Colv) || Colv) 
 				ddc <- reorderfun(ddc, Colv)
@@ -180,7 +189,8 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		lmat <- rbind(lmat[1, ] + 1, c(NA, 1), lmat[2, ] + 1)
 		lhei <- c(lhei[1L], ColSideWidth, lhei[2L])
 	} else if (!missing(ColSideColors)){ #ColSideColors
-		if (!is.character(ColSideColors) || nrow(ColSideColors) != 
+#		if (!is.character(ColSideColors) || nrow(ColSideColors) != 
+		if (!is.character(ColSideColors) & nrow(ColSideColors) != 
 				nc) 
 			stop("'ColSideColors' must be a character vector or matrix of length ncol(x)")
 		lmat <- rbind(lmat[1, ] + 1, c(NA, 1), lmat[2, ] + 1)
@@ -268,7 +278,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		if (verbose) {
 			cat(paste0("The samples could be cut into ",length(ColSideCutResult)," parts with height ",ColSideCut))
 			cat("\n")
-			ColSideCutResultSubIndList<-NULL
+			ColSideCutResultSubIndList<-list()
 			for (i in 1:length(ColSideCutResult)) {
 				ColSideCutResultSubInd<-order.dendrogram(ColSideCutResult[[i]])
 				ColSideCutResultSubIndList[[i]]<-ColSideCutResultSubInd
@@ -282,7 +292,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 					names(cutTable)[i]<-colnames(ColSideAnn)[i]
 					pvalue<-chisq.test(cutTable[[i]])$p.value
 					cat(paste0("Differential distribution for ",colnames(ColSideAnn)[i],", p value by chi-squared test: ",round(pvalue,3),"\n"))
-					cutTable[[i]]<-rbind(cutTable[[i]],round(cutTable[[i]][1,]/rowSums(cutTable[[i]]),2))
+					cutTable[[i]]<-rbind(cutTable[[i]],round(cutTable[[i]][1,]/colSums(cutTable[[i]]),2))
 					row.names(cutTable[[i]])[nrow(cutTable[[i]])]<-paste0(row.names(cutTable[[i]])[1],"_Percent")
 					cutTable[[i]]<-cbind(cutTable[[i]],pValue=c(pvalue,rep(NA,nrow(cutTable[[i]])-1)))
 				} else { #continous
@@ -348,18 +358,31 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 	else iy <- 1L:nr
 	image(1L:nc, 1L:nr, x, xlim = 0.5 + c(0, nc), ylim = 0.5 + 
 					c(0, nr), axes = FALSE, xlab = "", ylab = "", col=col,useRaster=useRaster,...)
+	if (!missing(colorCell)) {
+		colorCell[,1]<-rowInd[colorCell[,1]]
+		colorCell[,2]<-colInd[colorCell[,2]]
+		rect(colorCell[,2]-0.5,colorCell[,1]-0.5,colorCell[,2]+0.5,colorCell[,1]+0.5,col=as.character(colorCell[,3]),border=NA)
+	}
+	if (!missing(highlightCell)) {
+		if (ncol(highlightCell)==3) {
+			highlightCell$lwd<-1
+		}
+		highlightCell[,1]<-rowInd[highlightCell[,1]]
+		highlightCell[,2]<-colInd[highlightCell[,2]]
+		rect(highlightCell[,2]-0.5,highlightCell[,1]-0.5,highlightCell[,2]+0.5,highlightCell[,1]+0.5,border=as.character(highlightCell[,3]),lwd=as.integer(highlightCell[,4]))
+	}
 	if (!missing(ColSideColors) & ColAxisColors!=0) {
-		mtext(1, at=1L:nc, text = labCol, las = 2, line = 0.5,cex = cexCol,col=ColSideColors[colInd,ColAxisColors])
+		mtext(1, at=1L:nc, text = labCol, las = lasCol, line = 0.5,cex = cexCol,col=ColSideColors[colInd,ColAxisColors])
 	} else {
-		axis(1, 1L:nc, labels = labCol, las = 2, line = -0.5, tick = 0,cex.axis = cexCol)
+		axis(1, 1L:nc, labels = labCol, las = lasCol, line = -0.5, tick = 0,cex.axis = cexCol)
 	}
 	
 	if (!is.null(xlab)) 
 		mtext(xlab, side = 1, line = margins[1L] - 1.25)
 	if (!missing(RowSideColors) & RowAxisColors!=0) {
-		mtext(4, at=iy, text = labRow, las = 2, line = 0.5,cex = cexRow,col=RowSideColors[rowInd,RowAxisColors])
+		mtext(4, at=iy, text = labRow, las = lasRow, line = 0.5,cex = cexRow,col=RowSideColors[rowInd,RowAxisColors])
 	} else {
-		axis(4, iy, labels = labRow, las = 2, line = -0.5, tick = 0, cex.axis = cexRow)
+		axis(4, iy, labels = labRow, las = lasRow, line = -0.5, tick = 0, cex.axis = cexRow)
 	}
 	if (!is.null(ylab)) 
 		mtext(ylab, side = 4, line = margins[2L] - 1.25)

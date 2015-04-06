@@ -1,3 +1,24 @@
+2015-04-06
+heatmap3 1.1.1: Fixed a bug (method parameter now works in both row and column cluster); Documents and examples were improved.
+
+2014-12-15
+heatmap3 1.1.0: Fixed a bug.
+
+2014-10-14
+heatmap3 1.0.9: lasRow and lasCol parameters were used to specific style of axis labels.
+
+2014-08-29
+heatmap3 1.0.8: highlightCell parameter was used to highlight specific cells by rectangles with specific colors. Fixed a bug.
+
+2014-08-28
+heatmap3 1.0.7: colorCell parameter was used to color specific cells by specific colors.
+
+2014-08-08
+heatmap3 1.0.6: Fixed a bug.
+
+2014-07-17
+heatmap3 1.0.5: Fixed a bug.
+
 2014-06-10
 heatmap3 1.0.4: Fixed some Notes in check.
 

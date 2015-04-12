@@ -1,5 +1,6 @@
 % \VignetteEngine{knitr::knitr} 
-% \VignetteIndexEntry{heatmap3}
+% \VignetteIndexEntry{Introduction for heatmap3 package}
+% \VignettePackage{heatmap3}
 \documentclass[12pt]{article}
 \textwidth 6.75in
 \textheight 9.5in
@@ -21,7 +22,7 @@
 \maketitle
 \tableofcontents
 
-<<setting, echo=FALSE, cache=T>>=
+<<setting, echo=FALSE, cache=FALSE>>=
 options(width=58)
 @
 

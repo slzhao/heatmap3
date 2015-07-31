@@ -5,6 +5,8 @@
 ##' 
 ##' 
 ##' @inheritParams stats::heatmap
+##' @param distfunC function used to compute the distance (dissimilarity) between and columns. Will be the same as distfun if not specified.
+##' @param distfunR function used to compute the distance (dissimilarity) between and rows. Will be the same as distfun if not specified.
 ##' @param useRaster logical; if TRUE a bitmap raster is used to plot the image instead of polygons. The grid must be regular in that case, otherwise an error is raised.
 ##' @param file pdf file name, only works when topN was used.
 ##' @param topN vector a list of numbers. topN genes will be used to generate the heatmaps.
@@ -61,7 +63,7 @@
 ##' #annotations distribution in different clusters and the result of statistic tests
 ##' result$cutTable
 heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL, 
-		distfun = function(x) as.dist(1 - cor(t(x),use="pa")),balanceColor=F, ColSideLabs,RowSideLabs,showColDendro=T,showRowDendro=T,col=colorRampPalette(c("navy", "white", "firebrick3"))(1024),legendfun,method="complete",ColAxisColors=0,RowAxisColors=0, hclustfun = hclust, reorderfun = function(d, 
+		distfun = function(x) as.dist(1 - cor(t(x),use="pa")),distfunC,distfunR,balanceColor=F, ColSideLabs,RowSideLabs,showColDendro=T,showRowDendro=T,col=colorRampPalette(c("navy", "white", "firebrick3"))(1024),legendfun,method="complete",ColAxisColors=0,RowAxisColors=0, hclustfun = hclust, reorderfun = function(d, 
 				w) reorder(d, w), add.expr,symm = FALSE, revC = identical(Colv, 
 				"Rowv"), scale = c("row", "column", "none"), na.rm = TRUE, 
 		ColSideFun,ColSideAnn,ColSideWidth=0.4,ColSideCut,colorCell,highlightCell,
@@ -112,6 +114,12 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 			RowSideColors<-cbind(RowSideColors)
 		}
 	}
+	if (missing(distfunC)) {
+		distfunC<-distfun
+	}
+	if (missing(distfunR)) {
+		distfunR<-distfun
+	}
 	if (length(di <- dim(x)) != 2 || !is.numeric(x)) 
 		stop("'x' must be a numeric matrix")
 	nr <- di[1L]
@@ -132,7 +140,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		if (inherits(Rowv, "dendrogram")) 
 			ddr <- Rowv
 		else {
-			hcr <- hclustfun(distfun(x),method=method)
+			hcr <- hclustfun(distfunR(x),method=method)
 			ddr <- as.dendrogram(hcr)
 			if (!is.logical(Rowv) || Rowv) 
 				ddr <- reorderfun(ddr, Rowv)
@@ -150,7 +158,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 			ddc <- ddr
 		}
 		else {
-			hcc <- hclustfun(distfun(if (symm) 
+			hcc <- hclustfun(distfunC(if (symm) 
 										x
 									else t(x)),method=method)
 			ddc <- as.dendrogram(hcc)
@@ -231,6 +239,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 	layout(lmat, widths = lwid, heights = lhei, respect = TRUE)
 	if (!missing(legendfun)) {
 		par(mar = c(0, 0, 0, 0))
+		par(xpd=NA)
 		legendfun()
 	} else {
 		par(mar = c(5, 1, 1, 0))

@@ -4,8 +4,8 @@
 \title{heatmap3}
 \usage{
 heatmap3(x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
-  distfun = function(x) as.dist(1 - cor(t(x), use = "pa")),
-  balanceColor = F, ColSideLabs, RowSideLabs, showColDendro = T,
+  distfun = function(x) as.dist(1 - cor(t(x), use = "pa")), distfunC,
+  distfunR, balanceColor = F, ColSideLabs, RowSideLabs, showColDendro = T,
   showRowDendro = T, col = colorRampPalette(c("navy", "white",
   "firebrick3"))(1024), legendfun, method = "complete", ColAxisColors = 0,
   RowAxisColors = 0, hclustfun = hclust, reorderfun = function(d, w)
@@ -37,6 +37,10 @@ heatmap3(x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 
 \item{distfun}{function used to compute the distance (dissimilarity)
     between both rows and columns.  Defaults to \code{\link{dist}}.}
+
+\item{distfunC}{function used to compute the distance (dissimilarity) between and columns. Will be the same as distfun if not specified.}
+
+\item{distfunR}{function used to compute the distance (dissimilarity) between and rows. Will be the same as distfun if not specified.}
 
 \item{balanceColor}{logical indicating if the colors need to be balanced so that the median color will represent the 0 value. The default value is F.}
 

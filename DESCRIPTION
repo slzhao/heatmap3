@@ -1,8 +1,8 @@
 Package: heatmap3
 Type: Package
 Title: An Improved Heatmap Package
-Version: 1.1.3
-Date: 2015-07-27
+Version: 1.1.4
+Date: 2016-10-07
 Author: Shilin Zhao, Yan Guo, Quanhu Sheng, Yu Shyr
 Maintainer: Shilin Zhao <shilin.zhao@vanderbilt.edu>
 VignetteBuilder: knitr
@@ -15,3 +15,4 @@ Imports:
 Suggests:
     knitr
 LazyLoad: yes
+RoxygenNote: 5.0.1

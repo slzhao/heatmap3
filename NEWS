@@ -1,3 +1,6 @@
+2016-10-07
+heatmap3 1.1.4: Fixed a bug for highlightCell and colorCell
+
 2015-07-27
 heatmap3 1.1.3: Improved legend function. Added parameter distfunC and distfunR.
 

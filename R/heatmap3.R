@@ -368,16 +368,20 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 	image(1L:nc, 1L:nr, x, xlim = 0.5 + c(0, nc), ylim = 0.5 + 
 					c(0, nr), axes = FALSE, xlab = "", ylab = "", col=col,useRaster=useRaster,...)
 	if (!missing(colorCell)) {
-		colorCell[,1]<-rowInd[colorCell[,1]]
-		colorCell[,2]<-colInd[colorCell[,2]]
+#		colorCell[,1]<-rowInd[colorCell[,1]]
+#		colorCell[,2]<-colInd[colorCell[,2]]
+		colorCell[,1]<-match(colorCell[,1],rowInd)
+		colorCell[,2]<-match(colorCell[,2],colInd)
 		rect(colorCell[,2]-0.5,colorCell[,1]-0.5,colorCell[,2]+0.5,colorCell[,1]+0.5,col=as.character(colorCell[,3]),border=NA)
 	}
 	if (!missing(highlightCell)) {
 		if (ncol(highlightCell)==3) {
 			highlightCell$lwd<-1
 		}
-		highlightCell[,1]<-rowInd[highlightCell[,1]]
-		highlightCell[,2]<-colInd[highlightCell[,2]]
+#		highlightCell[,1]<-rowInd[highlightCell[,1]]
+#		highlightCell[,2]<-colInd[highlightCell[,2]]
+		highlightCell[,1]<-match(highlightCell[,1],rowInd)
+		highlightCell[,2]<-match(highlightCell[,2],colInd)
 		rect(highlightCell[,2]-0.5,highlightCell[,1]-0.5,highlightCell[,2]+0.5,highlightCell[,1]+0.5,border=as.character(highlightCell[,3]),lwd=as.integer(highlightCell[,4]))
 	}
 	if (!missing(ColSideColors) & ColAxisColors!=0) {

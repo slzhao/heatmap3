@@ -4,7 +4,8 @@
 \alias{colByValue}
 \title{colByValue}
 \usage{
-colByValue(x, col, range = NA, breaks = NA, cex.axis = 2, las = 1, ...)
+colByValue(x, col, range = NA, breaks = NA, cex.axis = 2, las = 1,
+  ...)
 }
 \arguments{
 \item{x}{matrix with values.}
@@ -33,4 +34,3 @@ col<-colByValue(temp,col=colorRampPalette(c('chartreuse4','white','firebrick'))(
 col<-colByValue(temp,col=colorRampPalette(c('chartreuse4',
 'white','firebrick'))(5),breaks=c(-5,-1,-0.1,0.1,1,5),cex.axis=0.8)
 }
-

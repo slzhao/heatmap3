@@ -26,6 +26,7 @@
 ##' @param showRowDendro logical indicating if the row dendrogram should be plotted (when Rowv isn't NA).
 ##' @param RowSideLabs label for RowSideColors
 ##' @param ColSideLabs label for ColSideColors
+##' @param returnDistMatrix logical indicating if the distance matrix will be returned
 ##' @param col specifying the colors, used in \code{\link{image}} function.
 ##' @param cexRow,cexCol positive numbers, used as cex.axis in for the row or column axis labeling. The defaults currently only use number of rows or columns, respectively.
 ##' @param labRow,labCol character vectors with row and column labels to use; these default to rownames(x) or colnames(x), respectively.
@@ -67,7 +68,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 				w) reorder(d, w), add.expr,symm = FALSE, revC = identical(Colv, 
 				"Rowv"), scale = c("row", "column", "none"), na.rm = TRUE, 
 		ColSideFun,ColSideAnn,ColSideWidth=0.4,ColSideCut,colorCell,highlightCell,
-		file="heatmap3.pdf",topN=NA,filterFun=sd,
+		file="heatmap3.pdf",topN=NA,filterFun=sd,returnDistMatrix=FALSE,
 		margins = c(5, 5), ColSideColors, RowSideColors, cexRow = 0.2 + 
 				1/log10(nrow(x)), cexCol = 0.2 + 1/log10(ncol(x)),lasRow=2,lasCol=2, labRow = NULL, 
 		labCol = NULL, main = NULL, xlab = NULL, ylab = NULL, keep.dendro = FALSE, 
@@ -120,6 +121,9 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 	if (missing(distfunR)) {
 		distfunR<-distfun
 	}
+	distMatrixC=NULL
+	distMatrixR=NULL
+	
 	if (length(di <- dim(x)) != 2 || !is.numeric(x)) 
 		stop("'x' must be a numeric matrix")
 	nr <- di[1L]
@@ -140,7 +144,8 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		if (inherits(Rowv, "dendrogram")) 
 			ddr <- Rowv
 		else {
-			hcr <- hclustfun(distfunR(x),method=method)
+			distMatrixR=distfunR(x)
+			hcr <- hclustfun(distMatrixR,method=method)
 			ddr <- as.dendrogram(hcr)
 			if (!is.logical(Rowv) || Rowv) 
 				ddr <- reorderfun(ddr, Rowv)
@@ -158,9 +163,8 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 			ddc <- ddr
 		}
 		else {
-			hcc <- hclustfun(distfunC(if (symm) 
-										x
-									else t(x)),method=method)
+			distMatrixC=distfunC(if (symm) x else t(x))
+			hcc <- hclustfun(distMatrixC,method=method)
 			ddc <- as.dendrogram(hcc)
 			if (!is.logical(Colv) || Colv) 
 				ddc <- reorderfun(ddc, Colv)
@@ -418,7 +422,10 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		title(main, cex.main = 1.5 * op[["cex.main"]])
 	}
 	invisible(list(rowInd = rowInd, colInd = colInd, Rowv = if (keep.dendro && 
-							doRdend) ddr, Colv = if (keep.dendro && doCdend) ddc, cutTable = if (!missing(ColSideAnn) && !missing(ColSideCut)) cutTable))
+							doRdend) ddr, Colv = if (keep.dendro && doCdend) ddc, 
+							cutTable = if (!missing(ColSideAnn) && !missing(ColSideCut)) cutTable,
+							DistMatrixC = if (returnDistMatrix) distMatrixC,
+							DistMatrixR = if (returnDistMatrix) distMatrixR))
 }
 
 ##' showLegend

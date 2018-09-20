@@ -1,3 +1,6 @@
+2018-09-05
+heatmap3 1.1.5: Return distance matrix as requested. Documents were improved.
+
 2016-10-07
 heatmap3 1.1.4: Fixed a bug for highlightCell and colorCell
 

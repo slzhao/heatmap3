@@ -24,4 +24,3 @@ showAnn(annData)
 heatmap3(t(mtcars),ColSideAnn=annData,ColSideFun=function(x) 
 showAnn(x),ColSideWidth=1.2,balanceColor=TRUE)
 }
-

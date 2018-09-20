@@ -6,17 +6,19 @@
 \usage{
 heatmap3(x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
   distfun = function(x) as.dist(1 - cor(t(x), use = "pa")), distfunC,
-  distfunR, balanceColor = F, ColSideLabs, RowSideLabs, showColDendro = T,
-  showRowDendro = T, col = colorRampPalette(c("navy", "white",
-  "firebrick3"))(1024), legendfun, method = "complete", ColAxisColors = 0,
+  distfunR, balanceColor = F, ColSideLabs, RowSideLabs,
+  showColDendro = T, showRowDendro = T,
+  col = colorRampPalette(c("navy", "white", "firebrick3"))(1024),
+  legendfun, method = "complete", ColAxisColors = 0,
   RowAxisColors = 0, hclustfun = hclust, reorderfun = function(d, w)
-  reorder(d, w), add.expr, symm = FALSE, revC = identical(Colv, "Rowv"),
-  scale = c("row", "column", "none"), na.rm = TRUE, ColSideFun, ColSideAnn,
-  ColSideWidth = 0.4, ColSideCut, colorCell, highlightCell,
-  file = "heatmap3.pdf", topN = NA, filterFun = sd, margins = c(5, 5),
-  ColSideColors, RowSideColors, cexRow = 0.2 + 1/log10(nrow(x)),
-  cexCol = 0.2 + 1/log10(ncol(x)), lasRow = 2, lasCol = 2,
-  labRow = NULL, labCol = NULL, main = NULL, xlab = NULL, ylab = NULL,
+  reorder(d, w), add.expr, symm = FALSE, revC = identical(Colv,
+  "Rowv"), scale = c("row", "column", "none"), na.rm = TRUE,
+  ColSideFun, ColSideAnn, ColSideWidth = 0.4, ColSideCut, colorCell,
+  highlightCell, file = "heatmap3.pdf", topN = NA, filterFun = sd,
+  returnDistMatrix = FALSE, margins = c(5, 5), ColSideColors,
+  RowSideColors, cexRow = 0.2 + 1/log10(nrow(x)), cexCol = 0.2 +
+  1/log10(ncol(x)), lasRow = 2, lasCol = 2, labRow = NULL,
+  labCol = NULL, main = NULL, xlab = NULL, ylab = NULL,
   keep.dendro = FALSE, verbose = getOption("verbose"), useRaster = if
   (ncol(x) * nrow(x) >= 50000) TRUE else FALSE, ...)
 }
@@ -107,6 +109,8 @@ heatmap3(x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 
 \item{filterFun}{function used to filter genes, such as sd, mean, sum. It will be used in a apply function to caculate for each row.}
 
+\item{returnDistMatrix}{logical indicating if the distance matrix will be returned}
+
 \item{margins}{numeric vector of length 2 containing the margins
     (see \code{\link{par}(mar = *)}) for column and row names, respectively.}
 
@@ -171,4 +175,3 @@ showAnn(x),ColSideWidth=0.8,RowSideColors=RowSideColors,col=colorRampPalette(c("
 #annotations distribution in different clusters and the result of statistic tests
 result$cutTable
 }
-

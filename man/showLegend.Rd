@@ -16,7 +16,7 @@ showLegend(legend = c("Group A", "Group B"), lwd = 3, cex = 1.1,
 
 \item{cex}{character expansion factor \bold{relative} to current
     \code{par("cex")}.  Used for text, and provides the default for
-    \code{pt.cex} and \code{title.cex}.}
+    \code{pt.cex}.}
 
 \item{col}{the color of points or lines appearing in the legend.}
 
@@ -33,4 +33,3 @@ heatmap3(mtcars,scale="col",margins=c(2,10),RowSideColors=RowSideColors,legendfu
 showLegend(legend=c("European","American","Japanese"),col=c("steelblue2","lightgoldenrod",
 "brown1"),cex=1.5))
 }
-

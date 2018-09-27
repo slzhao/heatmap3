@@ -240,7 +240,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		}
 	}
 	
-	layout(lmat, widths = lwid, heights = lhei, respect = TRUE)
+	graphics::layout(lmat, widths = lwid, heights = lhei, respect = TRUE)
 	if (!missing(legendfun)) {
 		par(mar = c(0, 0, 0, 0))
 		par(xpd=NA)

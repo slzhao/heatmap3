@@ -11,7 +11,7 @@ Heat map and clustering are used frequently in expression analysis studies for d
 
 <a name="download"/>
 # Download and install #
-You can install heatmap3 package in R from [CRAN](http://cran.r-project.org/web/packages/heatmap3/index.html) by following codes:
+You can install heatmap3 package in R from [CRAN](https://CRAN.R-project.org/package=heatmap3) by following codes:
 
 	install.packages("heatmap3")
 

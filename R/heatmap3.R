@@ -1,3 +1,8 @@
+##' @import grDevices
+##' @import graphics
+##' @importFrom stats aov as.dendrogram as.dist chisq.test cor lowess na.omit order.dendrogram quantile reorder sd
+NULL
+
 ##' heatmap3
 ##' 
 ##' The function heatmap3 is completely compatible with the original R function heatmap, and provides more new features.

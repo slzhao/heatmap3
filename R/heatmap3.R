@@ -1,3 +1,8 @@
+##' @import grDevices
+##' @import graphics
+##' @importFrom stats aov as.dendrogram as.dist chisq.test cor lowess na.omit order.dendrogram quantile reorder sd
+NULL
+
 ##' heatmap3
 ##' 
 ##' The function heatmap3 is completely compatible with the original R function heatmap, and provides more new features.
@@ -54,7 +59,8 @@
 ##' heatmap3(rnormData,ColSideColors=ColSideColors,showRowDendro=FALSE,colorCell=colorCell,
 ##'     highlightCell=highlightCell)
 ##' #A more detail example
-##' ColSideAnn<-data.frame(Information=rnorm(25),Group=c(rep("Control",5), rep(c("TrtA", "TrtB"),10)))
+##' ColSideAnn<-data.frame(Information=rnorm(25),Group=c(rep("Control",5), rep(c("TrtA", 
+##'     "TrtB"),10)),stringsAsFactors=TRUE)
 ##' row.names(ColSideAnn)<-colnames(rnormData)
 ##' RowSideColors<-colorRampPalette(c("chartreuse4", "white", "firebrick"))(40)
 ##' result<-heatmap3(rnormData,ColSideCut=1.2,ColSideAnn=ColSideAnn,ColSideFun=function(x) 
@@ -240,7 +246,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		}
 	}
 	
-	layout(lmat, widths = lwid, heights = lhei, respect = TRUE)
+	graphics::layout(lmat, widths = lwid, heights = lhei, respect = TRUE)
 	if (!missing(legendfun)) {
 		par(mar = c(0, 0, 0, 0))
 		par(xpd=NA)

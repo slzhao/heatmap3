@@ -1,3 +1,6 @@
+2019-03-20
+heatmap3 1.1.6: Minor updates to fix the NOTEs in R cmd check.
+
 2018-09-05
 heatmap3 1.1.5: Return distance matrix as requested. Documents were improved.
 

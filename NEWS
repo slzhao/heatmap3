@@ -1,3 +1,6 @@
+2020-03-03
+heatmap3 1.1.8: A few updates based on requests from users.
+
 2020-03-02
 heatmap3 1.1.7: Fixed a bug because of R updates (Added stringsAsFactors=TRUE in example).
 

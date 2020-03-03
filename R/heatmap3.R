@@ -79,6 +79,8 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 		labCol = NULL, main = NULL, xlab = NULL, ylab = NULL, keep.dendro = FALSE, 
 		verbose = getOption("verbose"),useRaster=if (ncol(x)*nrow(x)>=50000) TRUE else FALSE ,...) 
 {
+  hcc <- NULL
+  hcr <- NULL
 	#loop fot different topN
 	if (!all(is.na(topN))) {
 		temp<-apply(x,1,filterFun)
@@ -430,7 +432,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 							doRdend) ddr, Colv = if (keep.dendro && doCdend) ddc, 
 							cutTable = if (!missing(ColSideAnn) && !missing(ColSideCut)) cutTable,
 							DistMatrixC = if (returnDistMatrix) distMatrixC,
-							DistMatrixR = if (returnDistMatrix) distMatrixR))
+							DistMatrixR = if (returnDistMatrix) distMatrixR, hcr=hcr, hcc = hcc))
 }
 
 ##' showLegend

@@ -16,3 +16,4 @@ Suggests:
     knitr
 LazyLoad: yes
 RoxygenNote: 6.1.1
+

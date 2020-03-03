@@ -46,28 +46,33 @@ NULL
 ##' rnormData<-matrix(rnorm(1000), 40, 25)
 ##' rnormData[1:15, seq(6, 25, 2)] = rnormData[1:15, seq(6, 25, 2)] + 2
 ##' rnormData[16:40, seq(7, 25, 2)] = rnormData[16:40, seq(7, 25, 2)] + 4
-##' colnames(rnormData)<-c(paste("Control", 1:5, sep = ""), paste(c("TrtA", "TrtB"),
-##' rep(1:10,each=2), sep = ""))
+##' colnames(rnormData)<-c(paste("Control", 1:5, sep = ""), 
+##' paste(c("TrtA", "TrtB"), rep(1:10,each=2), sep = ""))
 ##' rownames(rnormData)<-paste("Probe", 1:40, sep = "")
-##' ColSideColors<-cbind(Group1=c(rep("steelblue2",5), rep(c("brown1", "mediumpurple2"),10)),
-##'     Group2=sample(c("steelblue2","brown1", "mediumpurple2"),25,replace=TRUE))
-##' colorCell<-data.frame(row=c(1,3,5),col=c(2,4,6),color=c("green4","black","orange2"),
-##'     stringsAsFactors=FALSE)
-##' highlightCell<-data.frame(row=c(2,4,6),col=c(1,3,5),color=c("black","green4","orange2"),
-##'     lwd=1:3,stringsAsFactors=FALSE)
+##' ColSideColors<-cbind(Group1=c(rep("steelblue2",5), rep(c("brown1", 
+##'     "mediumpurple2"),10)),Group2=sample(c("steelblue2","brown1", 
+##'     "mediumpurple2"),25,replace=TRUE))
+##' colorCell<-data.frame(row=c(1,3,5),col=c(2,4,6),color=c("green4",
+##'     "black","orange2"),stringsAsFactors=FALSE)
+##' highlightCell<-data.frame(row=c(2,4,6),col=c(1,3,5),color=c("black",
+##'     "green4","orange2"),lwd=1:3,stringsAsFactors=FALSE)
 ##' #A simple example
-##' heatmap3(rnormData,ColSideColors=ColSideColors,showRowDendro=FALSE,colorCell=colorCell,
-##'     highlightCell=highlightCell)
+##' heatmap3(rnormData,ColSideColors=ColSideColors,showRowDendro=FALSE,
+##'     colorCell=colorCell,highlightCell=highlightCell)
 ##' #A more detail example
-##' ColSideAnn<-data.frame(Information=rnorm(25),Group=c(rep("Control",5), rep(c("TrtA", 
-##'     "TrtB"),10)),stringsAsFactors=TRUE)
+##' ColSideAnn<-data.frame(Information=rnorm(25),Group=c(rep("Control",5),
+##'     rep(c("TrtA","TrtB"),10)),stringsAsFactors=TRUE)
 ##' row.names(ColSideAnn)<-colnames(rnormData)
-##' RowSideColors<-colorRampPalette(c("chartreuse4", "white", "firebrick"))(40)
-##' result<-heatmap3(rnormData,ColSideCut=1.2,ColSideAnn=ColSideAnn,ColSideFun=function(x) 
-##' showAnn(x),ColSideWidth=0.8,RowSideColors=RowSideColors,col=colorRampPalette(c("green",
-##' "black", "red"))(1024),RowAxisColors=1,legendfun=function() showLegend(legend=c("Low",
-##' "High"),col=c("chartreuse4","firebrick")),verbose=TRUE)
-##' #annotations distribution in different clusters and the result of statistic tests
+##' RowSideColors<-colorRampPalette(c("chartreuse4", "white", 
+##'     "firebrick"))(40)
+##' result<-heatmap3(rnormData,ColSideCut=1.2,ColSideAnn=ColSideAnn,
+##'     ColSideFun=function(x) showAnn(x),ColSideWidth=0.8,
+##'     RowSideColors=RowSideColors,col=colorRampPalette(c("green","black"
+##'     , "red"))(1024),RowAxisColors=1,legendfun=function() 
+##'     showLegend(legend=c("Low","High"),col=c("chartreuse4","firebrick"))
+##'     ,verbose=TRUE)
+##' #annotations distribution in different clusters and the result 
+##' #of statistic tests
 ##' result$cutTable
 heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL, 
 		distfun = function(x) as.dist(1 - cor(t(x),use="pa")),distfunC,distfunR,balanceColor=F, ColSideLabs,RowSideLabs,showColDendro=T,showRowDendro=T,col=colorRampPalette(c("navy", "white", "firebrick3"))(1024),legendfun,method="complete",ColAxisColors=0,RowAxisColors=0, hclustfun = hclust, reorderfun = function(d, 
@@ -449,9 +454,9 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 ##' @examples RowSideColors<-rep("steelblue2",nrow(mtcars))
 ##' RowSideColors[c(4:6,15:17,22:26,29)]<-"lightgoldenrod"
 ##' RowSideColors[c(1:3,19:21)]<-"brown1"
-##' heatmap3(mtcars,scale="col",margins=c(2,10),RowSideColors=RowSideColors,legendfun=function() 
-##' showLegend(legend=c("European","American","Japanese"),col=c("steelblue2","lightgoldenrod",
-##' "brown1"),cex=1.5))
+##' heatmap3(mtcars,scale="col",margins=c(2,10),RowSideColors=RowSideColors,
+##'    legendfun=function() showLegend(legend=c("European","American",
+##'    "Japanese"),col=c("steelblue2","lightgoldenrod","brown1"),cex=1.5))
 showLegend<-function(legend=c("Group A","Group B"),lwd=3,cex=1.1,col=c("red","blue"),...) {
 	plot(0,xaxt="n",bty="n",yaxt="n",type="n",xlab="",ylab="")
 	legend("topleft",legend=legend,lwd=lwd,col=col,bty="n",cex=cex,...)

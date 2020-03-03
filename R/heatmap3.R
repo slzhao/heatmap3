@@ -59,7 +59,8 @@ NULL
 ##' heatmap3(rnormData,ColSideColors=ColSideColors,showRowDendro=FALSE,colorCell=colorCell,
 ##'     highlightCell=highlightCell)
 ##' #A more detail example
-##' ColSideAnn<-data.frame(Information=rnorm(25),Group=c(rep("Control",5), rep(c("TrtA", "TrtB"),10)))
+##' ColSideAnn<-data.frame(Information=rnorm(25),Group=c(rep("Control",5), rep(c("TrtA", 
+##'     "TrtB"),10)),stringsAsFactors=TRUE)
 ##' row.names(ColSideAnn)<-colnames(rnormData)
 ##' RowSideColors<-colorRampPalette(c("chartreuse4", "white", "firebrick"))(40)
 ##' result<-heatmap3(rnormData,ColSideCut=1.2,ColSideAnn=ColSideAnn,ColSideFun=function(x) 

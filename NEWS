@@ -1,3 +1,6 @@
+2020-03-02
+heatmap3 1.1.7: Fixed a bug because of R updates (Added stringsAsFactors=TRUE in example).
+
 2019-03-20
 heatmap3 1.1.6: Minor updates to fix the NOTEs in R cmd check.
 

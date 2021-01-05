@@ -4,8 +4,13 @@
 \alias{showLegend}
 \title{showLegend}
 \usage{
-showLegend(legend = c("Group A", "Group B"), lwd = 3, cex = 1.1,
-  col = c("red", "blue"), ...)
+showLegend(
+  legend = c("Group A", "Group B"),
+  lwd = 3,
+  cex = 1.1,
+  col = c("red", "blue"),
+  ...
+)
 }
 \arguments{
 \item{legend}{a character or \link{expression} vector

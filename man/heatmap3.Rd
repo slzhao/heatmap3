@@ -4,29 +4,63 @@
 \alias{heatmap3}
 \title{heatmap3}
 \usage{
-heatmap3(x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
-  distfun = function(x) as.dist(1 - cor(t(x), use = "pa")), distfunC,
-  distfunR, balanceColor = F, ColSideLabs, RowSideLabs,
-  showColDendro = T, showRowDendro = T,
+heatmap3(
+  x,
+  Rowv = NULL,
+  Colv = if (symm) "Rowv" else NULL,
+  distfun = function(x) as.dist(1 - cor(t(x), use = "pa")),
+  distfunC,
+  distfunR,
+  balanceColor = F,
+  ColSideLabs,
+  RowSideLabs,
+  showColDendro = T,
+  showRowDendro = T,
   col = colorRampPalette(c("navy", "white", "firebrick3"))(1024),
-  legendfun, method = "complete", ColAxisColors = 0,
-  RowAxisColors = 0, hclustfun = hclust, reorderfun = function(d, w)
-  reorder(d, w), add.expr, symm = FALSE, revC = identical(Colv,
-  "Rowv"), scale = c("row", "column", "none"), na.rm = TRUE,
-  ColSideFun, ColSideAnn, ColSideWidth = 0.4, ColSideCut, colorCell,
-  highlightCell, file = "heatmap3.pdf", topN = NA, filterFun = sd,
-  returnDistMatrix = FALSE, margins = c(5, 5), ColSideColors,
-  RowSideColors, cexRow = 0.2 + 1/log10(nrow(x)), cexCol = 0.2 +
-  1/log10(ncol(x)), lasRow = 2, lasCol = 2, labRow = NULL,
-  labCol = NULL, main = NULL, xlab = NULL, ylab = NULL,
-  keep.dendro = FALSE, verbose = getOption("verbose"), useRaster = if
-  (ncol(x) * nrow(x) >= 50000) TRUE else FALSE, ...)
+  legendfun,
+  method = "complete",
+  ColAxisColors = 0,
+  RowAxisColors = 0,
+  hclustfun = hclust,
+  reorderfun = function(d, w) reorder(d, w),
+  add.expr,
+  symm = FALSE,
+  revC = identical(Colv, "Rowv"),
+  scale = c("row", "column", "none"),
+  na.rm = TRUE,
+  ColSideFun,
+  ColSideAnn,
+  ColSideWidth = 0.4,
+  ColSideCut,
+  colorCell,
+  highlightCell,
+  file = "heatmap3.pdf",
+  topN = NA,
+  filterFun = sd,
+  returnDistMatrix = FALSE,
+  margins = c(5, 5),
+  ColSideColors,
+  RowSideColors,
+  cexRow = 0.2 + 1/log10(nrow(x)),
+  cexCol = 0.2 + 1/log10(ncol(x)),
+  lasRow = 2,
+  lasCol = 2,
+  labRow = NULL,
+  labCol = NULL,
+  main = NULL,
+  xlab = NULL,
+  ylab = NULL,
+  keep.dendro = FALSE,
+  verbose = getOption("verbose"),
+  useRaster = if (ncol(x) * nrow(x) >= 50000) TRUE else FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{numeric matrix of the values to be plotted. }
 
 \item{Rowv}{determines if and how the \emph{row} dendrogram should be
-    computed and reordered.  Either a \code{\link{dendrogram}} or a
+    computed and reordered.  Either a \code{\link[stats]{dendrogram}} or a
     vector of values used to reorder the row dendrogram or
     \code{\link{NA}} to suppress any row dendrogram (and reordering) or
     by default, \code{\link{NULL}}, see \sQuote{Details} below.}
@@ -39,7 +73,7 @@ heatmap3(x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
     column one either).}
 
 \item{distfun}{function used to compute the distance (dissimilarity)
-    between both rows and columns.  Defaults to \code{\link{dist}}.}
+    between both rows and columns.  Defaults to \code{\link[stats]{dist}}.}
 
 \item{distfunC}{function used to compute the distance (dissimilarity) between and columns. Will be the same as distfun if not specified.}
 
@@ -67,12 +101,12 @@ heatmap3(x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 
 \item{hclustfun}{function used to compute the hierarchical clustering
     when \code{Rowv} or \code{Colv} are not dendrograms.  Defaults to
-    \code{\link{hclust}}. Should take as argument a result of \code{distfun}
-    and return an object to which \code{\link{as.dendrogram}} can be applied.}
+    \code{\link[stats]{hclust}}. Should take as argument a result of \code{distfun}
+    and return an object to which \code{\link[stats]{as.dendrogram}} can be applied.}
 
 \item{reorderfun}{\code{function(d, w)} of dendrogram and weights for
     reordering the row and column dendrograms.  The default uses
-    \code{\link{reorder.dendrogram}}.}
+    \code{\link[stats]{reorder.dendrogram}}.}
 
 \item{add.expr}{expression that will be evaluated after the call to
     \code{image}.  Can be used to add components to the plot.}

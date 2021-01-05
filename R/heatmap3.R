@@ -300,38 +300,39 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 	}
 	if (!missing(ColSideCut)) {
 		ColSideCutResult<-cut(ddc,ColSideCut)$lower
+		ColSideCutResultSubIndList<-list()
+		for (i in 1:length(ColSideCutResult)) {
+		  ColSideCutResultSubInd<-order.dendrogram(ColSideCutResult[[i]])
+		  ColSideCutResultSubIndList[[i]]<-ColSideCutResultSubInd
+		  #				cat(paste0("Summary for cluster ",i,":\n"))
+		  #				print(summary(ColSideAnn[ColSideCutResultSubInd,]))
+		}
 		cutTable<-NULL
 		if (verbose) {
 			cat(paste0("The samples could be cut into ",length(ColSideCutResult)," parts with height ",ColSideCut))
 			cat("\n")
-			ColSideCutResultSubIndList<-list()
-			for (i in 1:length(ColSideCutResult)) {
-				ColSideCutResultSubInd<-order.dendrogram(ColSideCutResult[[i]])
-				ColSideCutResultSubIndList[[i]]<-ColSideCutResultSubInd
-#				cat(paste0("Summary for cluster ",i,":\n"))
-#				print(summary(ColSideAnn[ColSideCutResultSubInd,]))
+			if (!missing(ColSideAnn)) {
+			  for (i in 1:ncol(ColSideAnn)) {
+			    if (is.factor(ColSideAnn[,i])) { #factor
+			      cutTable[[i]]<-sapply(ColSideCutResultSubIndList,function(x) table(ColSideAnn[x,i]))
+			      colnames(cutTable[[i]])<-paste0("Cluster ",1:length(ColSideCutResult))
+			      names(cutTable)[i]<-colnames(ColSideAnn)[i]
+			      pvalue<-chisq.test(cutTable[[i]])$p.value
+			      cat(paste0("Differential distribution for ",colnames(ColSideAnn)[i],", p value by chi-squared test: ",round(pvalue,3),"\n"))
+			      cutTable[[i]]<-rbind(cutTable[[i]],round(cutTable[[i]][1,]/colSums(cutTable[[i]]),2))
+			      row.names(cutTable[[i]])[nrow(cutTable[[i]])]<-paste0(row.names(cutTable[[i]])[1],"_Percent")
+			      cutTable[[i]]<-cbind(cutTable[[i]],pValue=c(pvalue,rep(NA,nrow(cutTable[[i]])-1)))
+			    } else { #continous
+			      cutTable[[i]]<-sapply(split(ColSideAnn[unlist(ColSideCutResultSubIndList),i],rep(1:length(ColSideCutResultSubIndList),sapply(ColSideCutResultSubIndList,length))),function(x) summary(na.omit(x)))
+			      colnames(cutTable[[i]])<-paste0("Cluster ",1:length(ColSideCutResult))
+			      names(cutTable)[i]<-colnames(ColSideAnn)[i]
+			      temp<-aov(ColSideAnn[unlist(ColSideCutResultSubIndList),i]~as.factor(rep(1:length(ColSideCutResultSubIndList),sapply(ColSideCutResultSubIndList,length))))
+			      pvalue<-summary(temp)[[1]]$"Pr(>F)"[1]
+			      cat(paste0("Differential distribution for ",colnames(ColSideAnn)[i],", p value by ANOVA: ",round(pvalue,3),"\n"))
+			      cutTable[[i]]<-cbind(cutTable[[i]],pValue=c(pvalue,rep(NA,5)))
+			    }
+			  }
 			}
-			for (i in 1:ncol(ColSideAnn)) {
-				if (is.factor(ColSideAnn[,i])) { #factor
-					cutTable[[i]]<-sapply(ColSideCutResultSubIndList,function(x) table(ColSideAnn[x,i]))
-					colnames(cutTable[[i]])<-paste0("Cluster ",1:length(ColSideCutResult))
-					names(cutTable)[i]<-colnames(ColSideAnn)[i]
-					pvalue<-chisq.test(cutTable[[i]])$p.value
-					cat(paste0("Differential distribution for ",colnames(ColSideAnn)[i],", p value by chi-squared test: ",round(pvalue,3),"\n"))
-					cutTable[[i]]<-rbind(cutTable[[i]],round(cutTable[[i]][1,]/colSums(cutTable[[i]]),2))
-					row.names(cutTable[[i]])[nrow(cutTable[[i]])]<-paste0(row.names(cutTable[[i]])[1],"_Percent")
-					cutTable[[i]]<-cbind(cutTable[[i]],pValue=c(pvalue,rep(NA,nrow(cutTable[[i]])-1)))
-				} else { #continous
-					cutTable[[i]]<-sapply(split(ColSideAnn[unlist(ColSideCutResultSubIndList),i],rep(1:length(ColSideCutResultSubIndList),sapply(ColSideCutResultSubIndList,length))),function(x) summary(na.omit(x)))
-					colnames(cutTable[[i]])<-paste0("Cluster ",1:length(ColSideCutResult))
-					names(cutTable)[i]<-colnames(ColSideAnn)[i]
-					temp<-aov(ColSideAnn[unlist(ColSideCutResultSubIndList),i]~as.factor(rep(1:length(ColSideCutResultSubIndList),sapply(ColSideCutResultSubIndList,length))))
-					pvalue<-summary(temp)[[1]]$"Pr(>F)"[1]
-					cat(paste0("Differential distribution for ",colnames(ColSideAnn)[i],", p value by ANOVA: ",round(pvalue,3),"\n"))
-					cutTable[[i]]<-cbind(cutTable[[i]],pValue=c(pvalue,rep(NA,5)))
-				}
-			}
-			
 		}
 		ColSideCutResultCol<-rainbow(length(ColSideCutResult),alpha=0.2)
 		ColNumber<-(ncol(x)-1)
@@ -437,6 +438,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 	invisible(list(rowInd = rowInd, colInd = colInd, Rowv = if (keep.dendro && 
 							doRdend) ddr, Colv = if (keep.dendro && doCdend) ddc, 
 							cutTable = if (!missing(ColSideAnn) && !missing(ColSideCut)) cutTable,
+							cutColoumIndList = if (!missing(ColSideCut)) ColSideCutResultSubIndList,
 							DistMatrixC = if (returnDistMatrix) distMatrixC,
 							DistMatrixR = if (returnDistMatrix) distMatrixR, hcr=hcr, hcc = hcc))
 }

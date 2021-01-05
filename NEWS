@@ -1,3 +1,6 @@
+2021-01-05
+heatmap3 1.1.9: Bugfix and return coloum index in cutColoumIndList when ColSideCut was defined to cut coloum dendrogram into parts.
+
 2020-03-03
 heatmap3 1.1.8: A few updates based on requests from users.
 

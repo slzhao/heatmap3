@@ -4,8 +4,7 @@
 \alias{colByValue}
 \title{colByValue}
 \usage{
-colByValue(x, col, range = NA, breaks = NA, cex.axis = 2, las = 1,
-  ...)
+colByValue(x, col, range = NA, breaks = NA, cex.axis = 2, las = 1, ...)
 }
 \arguments{
 \item{x}{matrix with values.}

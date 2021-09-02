@@ -91,6 +91,7 @@ heatmap3<-function (x, Rowv = NULL, Colv = if (symm) "Rowv" else NULL,
 	if (!all(is.na(topN))) {
 		temp<-apply(x,1,filterFun)
 		pdf(file)
+		result <- list()
 		for (n in topN) {
 			xSub<-x[rev(order(temp))[1:n],,drop=F]
 			if (!missing(RowSideColors)) {
